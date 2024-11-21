@@ -3,7 +3,12 @@
     <div class="logo">
       <img src="@/assets/logo.png" alt="logo" />
     </div>
-    <a-menu v-model:selectedKeys="selectedKeys" theme="light" mode="inline">
+    <a-menu
+      :selectedKeys="selectedMenuKeys"
+      @select="onSelect"
+      theme="light"
+      mode="inline"
+    >
       <template v-for="route in menuRoutes" :key="route.path">
         <!-- Regular menu items -->
         <a-menu-item
@@ -38,99 +43,41 @@
 
 <script lang="ts" setup>
 import {
-  DesktopOutlined,
   DatabaseOutlined,
   ContainerOutlined,
+  DesktopOutlined,
   AreaChartOutlined,
   SettingOutlined,
   HistoryOutlined,
   PieChartOutlined,
 } from "@ant-design/icons-vue";
-import { computed, ref } from "vue";
-import { useRouter, RouteRecordRaw } from "vue-router";
+import { ref } from "vue";
+import { useTransformRoute } from "@/hooks/useTransformRoute";
 
 defineOptions({
   name: "Sidebar",
 });
 
-const router = useRouter();
+const { menuRoutes, selectedMenuKeys, navigateTo } = useTransformRoute();
 const collapsed = ref<boolean>(false);
+const currentSelectedKeys = ref<string[]>([]);
 
-// Update selectedKeys based on current route
-const selectedKeys = computed(() => {
-  const currentPath = router.currentRoute.value.path;
-  const menuKey = currentPath.startsWith("/") ? currentPath : `/${currentPath}`;
-
-  // For regular menu items
-  if (
-    menuRoutes.value.some((route) => !route.children && route.path === menuKey)
-  ) {
-    return [`menu-item-${menuKey}`];
-  }
-
-  // For submenu items
-  for (const route of menuRoutes.value) {
-    if (route.children) {
-      for (const child of route.children) {
-        const fullPath = `${route.path}/${child.path}`;
-        if (menuKey === fullPath) {
-          return [`${route.path}/${child.path}`];
-        }
-      }
-    }
-  }
-
-  return [];
-});
-
-// Recursive function to transform routes to menu items
-const transformRouteToMenuItem = (
-  route: RouteRecordRaw
-): RouteRecordRaw | null => {
-  // Skip routes without title
-  if (!route.meta?.title) {
-    return null;
-  }
-
-  const menuItem = { ...route };
-
-  // Process children recursively
-  if (route.children?.length) {
-    const children = route.children
-      .map(transformRouteToMenuItem)
-      .filter((child): child is RouteRecordRaw => child !== null);
-
-    if (children.length) {
-      menuItem.children = children;
-    }
-  }
-
-  return menuItem;
+const onSelect = ({ selectedKeys: keys }: { selectedKeys: string[] }) => {
+  currentSelectedKeys.value = keys;
 };
 
-// Get menu routes using the recursive function
-const menuRoutes = computed(() => {
-  return router.options.routes
-    .map(transformRouteToMenuItem)
-    .filter((route): route is RouteRecordRaw => route !== null);
-});
-
-// Map icon names to components
+// Icon mapping
 const getIcon = (iconName?: string) => {
   const icons = {
-    AreaChartOutlined,
-    PieChartOutlined,
-    DesktopOutlined,
     DatabaseOutlined,
     ContainerOutlined,
-    HistoryOutlined,
+    DesktopOutlined,
+    AreaChartOutlined,
     SettingOutlined,
+    HistoryOutlined,
+    PieChartOutlined,
   };
   return icons[iconName as keyof typeof icons] || AreaChartOutlined;
-};
-
-const navigateTo = (path: string) => {
-  router.push(path);
 };
 </script>
 <style lang="less">
