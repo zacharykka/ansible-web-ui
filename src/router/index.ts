@@ -21,7 +21,6 @@ const routes: RouteRecordRaw[] = [
     redirect: '/inventory/hostgroups',
     meta: {
       title: 'Inventory管理',
-      // icon: 'pie-chart-outlined',
       icon: 'DatabaseOutlined',
     },
     children: [
@@ -47,7 +46,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/Adhoc.vue'),
     meta: {
       title: 'Ad-hoc模式',
-      // icon: 'desktop-outlined'
       icon: 'DesktopOutlined'
     }
   },
@@ -57,7 +55,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/Playbook.vue'),
     meta: {
       title: 'Playbook模式',
-      // icon: 'desktop-outlined'
       icon: 'ContainerOutlined'
     }
   },
@@ -67,7 +64,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/views/Tasks.vue"),
     meta: {
       title: "任务管理",
-      // icon: "team-outlined"
       icon: "HistoryOutlined"
     }
   },
@@ -77,7 +73,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/Settings.vue'),
     meta: {
       title: '系统设置',
-      // icon: 'setting-outlined'
       icon: 'SettingOutlined'
     }
   }
